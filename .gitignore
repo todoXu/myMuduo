@@ -1,0 +1,27 @@
+# 编译生成的文件夹
+/build/
+/bin/
+/lib/
+/install/
+
+# 编译生成的文件
+*.o
+*.obj
+*.so
+*.a
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# CMake 生成的文件和文件夹
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+compile_commands.json
+_deps/
+
+
