@@ -118,5 +118,8 @@
     "editor.detectIndentation": false,
     "editor.fontSize": 18,
     "editor.stickyScroll.enabled": true,
-    "editor.occurrencesHighlight": "off"
+    "editor.occurrencesHighlight": "off",
+    "cmake.useCMakePresets": "never",
+    "cmake.configureOnOpen": false,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

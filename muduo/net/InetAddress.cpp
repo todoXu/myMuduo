@@ -1,11 +1,8 @@
 #include "muduo/net/InetAddress.h"
-
 #include <arpa/inet.h>
 #include <netdb.h>
-
 #include <cassert>
 #include <cstring>
-
 #include "spdlog/spdlog.h"
 
 namespace myMuduo {

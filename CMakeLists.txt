@@ -10,7 +10,6 @@ set(CMAKE_CXX_EXTENSIONS OFF) # 通常建议关闭编译器特定扩展
 # 因为源文件中的 #include 指令是类似 "muduo/base/Xxx.h" 的形式，
 # 所以需要将项目源码的根目录添加到包含路径中。
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/muduo)
 # 查找 muduo 目录及其子目录下的所有 .cpp 源文件
 # CONFIGURE_DEPENDS 确保当源文件列表变化时，CMake 会重新生成构建系统
 file(GLOB_RECURSE MUDUO_SOURCES CONFIGURE_DEPENDS "muduo/**/*.cpp")

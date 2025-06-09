@@ -1,16 +1,11 @@
 #pragma once
 
 #include <poll.h>
-
 #include <functional>
 #include <memory>
-
 #include "muduo/base/Timestamp.h"
 #include "muduo/base/noncopyable.h"
 
-const int myMuduo::net::Channel::kNoneEvent = 0;
-const int myMuduo::net::Channel::kReadEvent = POLLIN | POLLPRI;
-const int myMuduo::net::Channel::kWriteEvent = POLLOUT;
 
 namespace myMuduo {
 namespace net {
@@ -33,16 +28,14 @@ public:
     void setErrorCallback(EventCallback cb) { errorCallback_ = std::move(cb); }
 
     //绑定Channel拥有者的生命周期
-    void tie(const std::shared_ptr<void> &obj)
-    {
-        tie_ = obj;
-        tied_ = true;
-    }
+    void tie(const std::shared_ptr<void> &obj);
 
     int fd() const { return fd_; }
     int events() const { return events_; }
+
     //poller 向 Channel 通知 当前 fd 实际发生了哪些事件
     void set_revents(int revt) { revents_ = revt; }
+
     bool isNoneEvent() const { return events_ == kNoneEvent; }
     bool isReading() const { return events_ & kReadEvent; }
     bool isWriting() const { return events_ & kWriteEvent; }
@@ -81,7 +74,8 @@ public:
     void set_index(int idx) { index_ = idx; }
 
     std::string reventsToString() const;
-
+    std::string eventsToString() const;
+    // 返回Channel所属的EventLoop
     EventLoop *ownerLoop() { return loop_; }
     void remove();
 
@@ -92,8 +86,8 @@ private:
 
     EventLoop *loop_;
     const int fd_;
-    int events_;   // 关注的事件
-    int revents_;  // poller返回的事件
+    int events_;   // 当前关注的事件类型 读/写/不关注
+    int revents_;  // fd关联的真实事件 在poller中监听
     int index_;    // 用于标识Channel在Poller中的位置
 
     std::weak_ptr<void> tie_;  // 观察Channel拥有者的生命周期

@@ -56,3 +56,15 @@ SpacesBeforeTrailingComments: 2     # 代码和注释之间有两个空格
 ReflowComments: false               # 不重新格式化注释内容
 CommentPragmas: '^ IWYU pragma:'    # 可以添加不要格式化的注释模式
 FixNamespaceComments: true          # 自动修复命名空间结束注释
+
+
+# 更强烈地倾向于将参数放在同一行
+BinPackArguments: true
+
+# 极大增加第一个参数后换行的惩罚（关键设置）
+PenaltyBreakBeforeFirstCallParameter: 100000
+
+# 降低超出列宽的惩罚，使其更倾向于保持同一行
+PenaltyExcessCharacter: 1
+
+IncludeBlocks: Merge  # 将所有头文件合并为一个块
