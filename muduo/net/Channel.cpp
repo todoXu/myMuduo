@@ -2,6 +2,7 @@
 #include <cassert>
 #include <sstream>
 #include "muduo/net/EventLoop.h"
+#include "muduo/net/poller/Poller.h"
 #include "spdlog/spdlog.h"
 
 const int myMuduo::net::Channel::kNoneEvent = 0;
@@ -16,10 +17,10 @@ Channel::Channel(EventLoop *loop, int fd)
     , fd_(fd)
     , events_(kNoneEvent)
     , revents_(kNoneEvent)
-    , index_(-1)
+    , index_(kNew)
+    , tied_(false)
     , eventHandling_(false)
     , addedToLoop_(false)
-    , tied_(false)
 {
     if (fd_ < 0)
     {

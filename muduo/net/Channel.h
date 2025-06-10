@@ -6,7 +6,6 @@
 #include "muduo/base/Timestamp.h"
 #include "muduo/base/noncopyable.h"
 
-
 namespace myMuduo {
 namespace net {
 class EventLoop;
@@ -70,6 +69,10 @@ public:
         update();
     }
 
+    // 设置Channel在Poller中的状态
+    // -1表示未在Poller中注册
+    // 1表示在Poller中注册
+    // 2表示在Poller中被移除
     int index() const { return index_; }
     void set_index(int idx) { index_ = idx; }
 
@@ -86,9 +89,12 @@ private:
 
     EventLoop *loop_;
     const int fd_;
-    int events_;   // 当前关注的事件类型 读/写/不关注
+    int events_;   // 希望关注的事件类型 读/写/不关注
     int revents_;  // fd关联的真实事件 在poller中监听
-    int index_;    // 用于标识Channel在Poller中的位置
+    int index_;    // 用于标识Channel在Poller的实际状态
+                   // -1表示未在Poller中注册
+                   // 1表示在Poller中注册
+                   // 2表示在Poller中被移除
 
     std::weak_ptr<void> tie_;  // 观察Channel拥有者的生命周期
     bool tied_;                // 是否绑定了生命周期

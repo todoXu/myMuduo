@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) # 通常建议关闭编译器特定扩展
 
+set(CMAKE_CXX_FLAGS "-Wall -Werror -g -O0 -std=c++11") # 设置编译选项
+
 # 添加包含目录
 # 因为源文件中的 #include 指令是类似 "muduo/base/Xxx.h" 的形式，
 # 所以需要将项目源码的根目录添加到包含路径中。
@@ -32,6 +34,8 @@ set_target_properties(myMuduo PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOU
 #     # 或者输出到源码目录下的 lib 文件夹 (通常不推荐直接输出到源码树)
 #     # ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
 # )
+
+
 
 #如果你有一个测试用的可执行文件 main.cpp
 add_executable(test "./test/test.cpp")

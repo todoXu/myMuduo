@@ -12,8 +12,9 @@ namespace net {
 class EPollPoller : public IPoller
 {
 public:
+
     EPollPoller(EventLoop* loop);
-    ~EPollPoller();
+    ~EPollPoller() override;
 
     Timestamp poll(int timeoutMs, ChannelList* activeChannels) override;
     void updateChannel(Channel* channel) override;
@@ -39,7 +40,6 @@ private:
 
     EventLoop* ownerLoop_;
 };
-
 
 }  // namespace net
 }  // namespace myMuduo
