@@ -10,7 +10,6 @@ namespace net {
 EPollPoller::EPollPoller(EventLoop* loop)
     : events_(kInitEventListSize)
     , ownerLoop_(loop)
-
 {
     // 创建一个epoll实例，返回一个文件描述符
     // EPOLL_CLOEXEC用于设置文件描述符的关闭执行标志，防止子进程继承该文件描述符
@@ -20,7 +19,6 @@ EPollPoller::EPollPoller(EventLoop* loop)
     if (epollfd_ < 0)
     {
         spdlog::critical("EPollPoller::EPollPoller() - epoll_create1 failed: {}", strerror(errno));
-        fflush(stdout);
         abort();
     }
 }
@@ -57,7 +55,6 @@ Timestamp EPollPoller::poll(int timeoutMs, ChannelList* activeChannels)
         if (savedErrno != EINTR)
         {
             spdlog::critical("EPollPoller::poll() - epoll_wait failed: {}", strerror(errno));
-            fflush(stdout);
             abort();
         }
         else
@@ -178,7 +175,6 @@ void EPollPoller::update(int operation, Channel* channel)
     {
         spdlog::critical("EPollPoller::update() - epoll_ctl failed: {}, fd: {}, operation: {}",
                          strerror(errno), fd, operationToString(operation));
-        fflush(stdout);
         abort();
     }
 }

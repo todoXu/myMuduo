@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) # 通常建议关闭编译器特定扩展
 
-set(CMAKE_CXX_FLAGS "-Wall -Werror -g -O0 -std=c++11") # 设置编译选项
+set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -g -O0 -std=c++11") # 设置编译选项
 
 # 添加包含目录
 # 因为源文件中的 #include 指令是类似 "muduo/base/Xxx.h" 的形式，
