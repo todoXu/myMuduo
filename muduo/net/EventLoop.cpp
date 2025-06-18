@@ -46,7 +46,7 @@ EventLoop::EventLoop()
     spdlog::debug("EventLoop created in thread {}", threadId_);
     if (t_loopInThisThread)
     {
-        spdlog::critical("Another EventLoop {} exists in this thread {}", t_loopInThisThread, threadId_);
+        spdlog::critical("Another EventLoop {:p} exists in this thread {}", static_cast<void*>(t_loopInThisThread), threadId_);
         abortNotInLoopThread();
     }
     else
@@ -178,7 +178,7 @@ bool EventLoop::hasChannel(Channel *channel)
 {
     assert(channel->ownerLoop() == this);
     assertInLoopThread();
-    pollerPtr_->hasChannel(channel);
+    return pollerPtr_->hasChannel(channel);
 }
 
 void EventLoop::assertInLoopThread()
@@ -196,8 +196,6 @@ bool EventLoop::eventHandling() const { return false; }
 void EventLoop::setContext(const base::Any &context) { context_ = context; }
 
 const base::Any &EventLoop::getContext() const { return context_; }
-
-EventLoop *EventLoop::getEventLoopOfCurrentThread() { return t_loopInThisThread; }
 
 void EventLoop::abortNotInLoopThread()
 {
@@ -242,7 +240,7 @@ void EventLoop::printActiveChannels() const
         Channel *channel = *it;
         spdlog::info("activeChannels_ = {}", channel->reventsToString());
     }
+}
 
 }  // namespace net
-
 }  // namespace myMuduo
