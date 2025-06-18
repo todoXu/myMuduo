@@ -40,12 +40,12 @@ Channel::Channel(EventLoop *loop, int fd)
 */
 Channel::~Channel()
 {
-    // assert(!eventHandling_);
-    // assert(!addedToLoop_);
-    // if (loop_->isInLoopThread())
-    // {
-    //     assert(!loop_->hasChannel(this));
-    // }
+    assert(!eventHandling_);
+    assert(!addedToLoop_);
+    if (loop_->isInLoopThread())
+    {
+        assert(!loop_->hasChannel(this));
+    }
 }
 
 void Channel::tie(const std::shared_ptr<void> &obj)
@@ -57,15 +57,15 @@ void Channel::tie(const std::shared_ptr<void> &obj)
 //通过eventloop在poller里面更改fd的事件
 void Channel::update()
 {
-    // addedToLoop_ = true;
-    // loop_->updateChannel(this);
+    addedToLoop_ = true;
+    loop_->updateChannel(this);
 }
 
 void Channel::remove()
 {
-    // assert(isNoneEvent());
-    // addedToLoop_ = false;
-    // loop_->removeChannel(this);
+    assert(isNoneEvent());
+    addedToLoop_ = false;
+    loop_->removeChannel(this);
 }
 
 void Channel::handleEvent(Timestamp receiveTime)

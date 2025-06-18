@@ -32,10 +32,9 @@ public:
     void quit();
 
     Timestamp pollReturnTime() const;
-    int64_t iteration() const;
     void runInLoop(Functor cb);
     void queueInLoop(Functor cb);
-    size_t queueSize() const;
+    size_t queueSize();
 
     //TimerId runAt(Timestamp time, TimerCallback cb);
     //TimerId runAfter(double delay, TimerCallback cb);
@@ -45,7 +44,7 @@ public:
     void wakeup();
     void updateChannel(Channel *channel);
     void removeChannel(Channel *channel);
-    bool hasChannel(Channel *channel) const;
+    bool hasChannel(Channel *channel);
 
     void assertInLoopThread();
     bool isInLoopThread() const;
@@ -69,7 +68,6 @@ private:
     std::atomic<bool> quit_;  // 是否退出事件循环
     std::atomic<bool> eventHandling_;
     std::atomic<bool> callingPendingFunctors_;
-    int64_t iteration_;
     const pid_t threadId_;      // 创建EventLoop的线程ID
     Timestamp pollReturnTime_;  // 上次poll的返回时间
 
@@ -77,7 +75,7 @@ private:
 
     //std::unique_ptr<TimerQueue> timerQueue_;
     
-    int wakeupFd_; //当主loop接收到新连接时，唤醒子loop
+    int wakeupFd_; //当baseloop接收到新连接时，通过wakeupfd唤醒ioLoop线程
     std::unique_ptr<Channel> wakeupChannelPtr_;
     
     base::Any context_;
