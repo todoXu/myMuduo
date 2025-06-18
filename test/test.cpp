@@ -1,9 +1,9 @@
 #include <iostream>
-#include "muduo/base/Any.h"
-#include "muduo/net/InetAddress.h"
+#include "myMuduo/base/Any.h"
+#include "myMuduo/net/InetAddress.h"
 #include "spdlog/spdlog.h"
-#include "muduo/base/Thread.h"
-#include "muduo/base/CurrentThread.h"
+#include "myMuduo/base/Thread.h"
+#include "myMuduo/base/CurrentThread.h"
 #include "chrono"
 int main()
 {
@@ -19,7 +19,7 @@ int main()
 
     myMuduo::net::InetAddress addr4;
     myMuduo::net::InetAddress::resolve("www.baidu.com", &addr4);
-    spdlog::info("Address 4: {}", addr1.toIpPort());
+    spdlog::info("Address 4: {}", addr4.toIpPort());
 
     myMuduo::base::Any any1(42);
     myMuduo::base::Any any2(std::string("Hello, World!"));

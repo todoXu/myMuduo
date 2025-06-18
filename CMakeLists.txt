@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -g -O0 -std=c++11 -fPIC") # 设置编
 include_directories(${PROJECT_SOURCE_DIR})
 # 查找 muduo 目录及其子目录下的所有 .cpp 源文件
 # CONFIGURE_DEPENDS 确保当源文件列表变化时，CMake 会重新生成构建系统
-file(GLOB_RECURSE MUDUO_SOURCES CONFIGURE_DEPENDS "muduo/**/*.cpp")
+file(GLOB_RECURSE MUDUO_SOURCES CONFIGURE_DEPENDS "myMuduo/**/*.cpp")
 
 # 检查是否找到了源文件
 if(NOT MUDUO_SOURCES)
