@@ -10,7 +10,7 @@ std::atomic<int32_t> Thread::numCreated_(0);
 Thread::Thread(ThreadFunc func, const std::string& name)
     : started_(false)
     , joined_(false)
-    , thread_(nullptr)
+    , threadPtr_(nullptr)
     , func_(std::move(func))
     , tid_(0)
     , name_(name)
@@ -23,7 +23,7 @@ Thread::~Thread()
 {
     if (started_ && !joined_)
     {
-        thread_->detach();
+        threadPtr_->detach();
     }
 }
 
@@ -32,9 +32,9 @@ void Thread::start()
     started_ = true;
     sem_t sem;
     sem_init(&sem, 0, 0);
-    // 需要在 lambda 里访问或修改外部变量（如成员变量）时，用 [&] 或 [this]。
+    // 需要在 lambda 里访问或修改外部变量时，用 [&] 按引用方式捕获变量，在类成员函数中使用时，[&] 也会隐式地捕获 this 指针
     // 不需要访问外部变量时，用 []
-    thread_ = std::unique_ptr<std::thread>(new std::thread([this, &sem]() {
+    threadPtr_ = std::unique_ptr<std::thread>(new std::thread([&]() {
         //获取真正的线程ID  而不是Thread的线程ID
         tid_ = CurrentThread::tid();
         sem_post(&sem);
@@ -49,7 +49,7 @@ void Thread::start()
 void Thread::join()
 {
     joined_ = true;
-    thread_->join();
+    threadPtr_->join();
 }
 
 void Thread::setDefaultName()

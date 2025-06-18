@@ -28,7 +28,7 @@ private:
 
     bool started_;
     bool joined_;
-    std::unique_ptr<std::thread> thread_;
+    std::unique_ptr<std::thread> threadPtr_;
     ThreadFunc func_;
     pid_t tid_;
     std::string name_;

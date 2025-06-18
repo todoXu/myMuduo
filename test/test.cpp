@@ -42,7 +42,7 @@ int main()
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }, "TestThread");
-
+    spdlog::info("mainThread {}", myMuduo::base::CurrentThread::tid());
     spdlog::info("Thread started with Name: {}", thread.name());
     thread.start();
     thread.join();
