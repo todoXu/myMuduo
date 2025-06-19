@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "myMuduo/net/EventLoop.h"
 #include "myMuduo/net/InetAddress.h"
+#include "spdlog/spdlog.h"
 
 namespace myMuduo {
 namespace net {
@@ -46,6 +47,7 @@ void Acceptor::handleRead()
         }
         else
         {
+            spdlog::warn("New connection callback is not set, closing connection fd: {}", connfd);
             close(connfd);
         }
     }
