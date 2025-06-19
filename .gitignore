@@ -24,4 +24,5 @@ CTestTestfile.cmake
 compile_commands.json
 _deps/
 
-
+// 临时文件和日志
+.cache

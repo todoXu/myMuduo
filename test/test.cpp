@@ -1,10 +1,10 @@
 #include <iostream>
+#include "chrono"
 #include "myMuduo/base/Any.h"
+#include "myMuduo/base/CurrentThread.h"
+#include "myMuduo/base/Thread.h"
 #include "myMuduo/net/InetAddress.h"
 #include "spdlog/spdlog.h"
-#include "myMuduo/base/Thread.h"
-#include "myMuduo/base/CurrentThread.h"
-#include "chrono"
 int main()
 {
     myMuduo::net::InetAddress addr1(8080, true);  // 只接受本机的请求
@@ -35,13 +35,15 @@ int main()
     spdlog::info("Any2 type: {}, value: {}", any3.type().name(), *any3.cast<float>());
     spdlog::info("Any4 type: {}, value: {}", any4.type().name(), any4.cast<test>()->a);
 
-    myMuduo::base::Thread thread([]() {
-        for (int i = 0; i < 10; ++i)
-        {
-            spdlog::info("Thread is running in thread {}", myMuduo::base::CurrentThread::tid());
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        }
-    }, "TestThread");
+    myMuduo::base::Thread thread(
+        []() {
+            for (int i = 0; i < 10; ++i)
+            {
+                spdlog::info("Thread is running in thread {}", myMuduo::base::CurrentThread::tid());
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+        },
+        "TestThread");
     spdlog::info("mainThread {}", myMuduo::base::CurrentThread::tid());
     spdlog::info("Thread started with Name: {}", thread.name());
     thread.start();
@@ -50,4 +52,3 @@ int main()
 
     return 0;
 }
-
