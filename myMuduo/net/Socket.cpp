@@ -80,16 +80,7 @@ void Socket::setKeepAlive(bool on)
     setsockopt(sockfd_, IPPROTO_TCP, SO_KEEPALIVE, &optval, static_cast<socklen_t>(sizeof(optval)));
 }
 
-int Socket::createNonblockingOrDie(sa_family_t family)
-{
-    int sockfd = socket(family, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
-    if (sockfd < 0)
-    {
-        spdlog::critical("Socket::createNonblockingOrDie error: {}", strerror(errno));
-        abort();
-    }
-    return sockfd;
-}
+
 
 }  // namespace net
 }  // namespace myMuduo
