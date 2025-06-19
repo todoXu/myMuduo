@@ -19,6 +19,7 @@ public:
     uint16_t port() const;
     uint32_t ipv4NetEndian() const;
     uint16_t portNetEndian() const { return addr_.sin_port; }
+    void setSockAddrInet(const struct sockaddr_in &addr) { addr_ = addr; }
     static bool resolve(const std::string &hostname, InetAddress *result);
     const struct sockaddr_in *getSockAddr() const { return &addr_; }
 

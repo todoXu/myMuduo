@@ -35,8 +35,11 @@ void EventLoopThreadPool::start(const ThreadInitCallback& cb)
     {
         std::string threadName = name_ + std::to_string(i);
         std::unique_ptr<EventLoopThread> threadPtr(new EventLoopThread(cb, threadName));
+        
+        EventLoop* tmpLoop = threadPtr->startLoop();
         //loops_只是用一下loop 不管理loop
-        loops_.push_back(threadPtr->startLoop());
+        loops_.push_back(tmpLoop);
+        
         //thread的所有权转移到 threads_中
         //管理thread的生命周期 让thread的生命周期和EventLoopThreadPool的生命周期一致
         threads_.push_back(std::move(threadPtr));
