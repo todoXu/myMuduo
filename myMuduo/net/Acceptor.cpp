@@ -49,6 +49,12 @@ void Acceptor::listen()
 //LT 模式下，如果一个事件没有被一次性处理完毕，epoll_wait 会在后续的调用中持续地提醒你，直到该事件被处理完毕（即触发条件不再满足）
 //handleRead调用1次只能处理1个新连接
 //如果有多个新连接，handleRead会被调用多次 所以不用while一直accept
+//用while一直读也可以，事件处理完后break就行了
+//     if (errno == EAGAIN || errno == EWOULDBLOCK)
+//     {
+//         // 所有等待的连接都已处理完毕
+//          break;
+//     }
 void Acceptor::handleRead()
 {
     loop_->assertInLoopThread();
@@ -64,6 +70,14 @@ void Acceptor::handleRead()
         {
             spdlog::warn("New connection callback is not set, closing connection fd: {}", connfd);
             close(connfd);
+        }
+    }
+    else
+    {
+        spdlog::error("Accept error: {}", strerror(errno));
+        if (errno == EMFILE)  
+        {
+            spdlog::warn("socket fd limit reached, consider increasing the limit");
         }
     }
 }
