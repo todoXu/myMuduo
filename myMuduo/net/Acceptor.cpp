@@ -27,7 +27,7 @@ Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reusepor
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.setReusePort(reuseport);
     acceptSocket_.bindAddress(listenAddr);
-    acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
+    acceptChannel_.setReadCallback([&](Timestamp receiveTime) { this->handleRead(receiveTime); });
 }
 
 Acceptor::~Acceptor()
@@ -55,7 +55,7 @@ void Acceptor::listen()
 //         // 所有等待的连接都已处理完毕
 //          break;
 //     }
-void Acceptor::handleRead()
+void Acceptor::handleRead(Timestamp receiveTime)
 {
     loop_->assertInLoopThread();
     InetAddress peerAddr;
@@ -64,6 +64,8 @@ void Acceptor::handleRead()
     {
         if (newConnectionCallback_)
         {
+            spdlog::debug("New connection accepted: fd={}, peer address={} Time={}", connfd,
+                          peerAddr.toIpPort(), receiveTime.toString());
             newConnectionCallback_(connfd, peerAddr);
         }
         else
@@ -75,7 +77,7 @@ void Acceptor::handleRead()
     else
     {
         spdlog::error("Accept error: {}", strerror(errno));
-        if (errno == EMFILE)  
+        if (errno == EMFILE)
         {
             spdlog::warn("socket fd limit reached, consider increasing the limit");
         }
