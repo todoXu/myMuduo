@@ -25,6 +25,8 @@ Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reusepor
     , listening_(false)
 {
     acceptSocket_.setReuseAddr(true);
+    //用于多进程的端口复用
+    //如果有多个进程监听同一个端口，只有一个进程能接收到新连接
     acceptSocket_.setReusePort(reuseport);
     acceptSocket_.bindAddress(listenAddr);
     acceptChannel_.setReadCallback([&](Timestamp receiveTime) { this->handleRead(receiveTime); });

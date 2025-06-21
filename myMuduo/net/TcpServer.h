@@ -25,8 +25,8 @@ public:
 
     enum Option
     {
-        kNoReusePort,  // 不使用端口复用
-        kReusePort
+        kNoReusePort = false,  // 不使用端口复用
+        kReusePort = true
     };
 
     TcpServer(EventLoop* loop, const InetAddress& listenAddr, const std::string& name, Option option = kNoReusePort);
@@ -34,8 +34,8 @@ public:
 
     const std::string& name() const { return name_; }
     const std::string& ipPort() const { return ipPort_; }
-    EventLoop* getLoop() const { return loop_; }
-    std::shared_ptr<EventLoopThreadPool> threadPool() const { return threadPool_; }
+    EventLoop* getLoop() const { return baseLoop_; }
+    std::shared_ptr<EventLoopThreadPool> threadPool() const { return threadPoolPtr_; }
 
     void setThreadNum(int numThreads);
     void setConnectionCallback(ConnectionCallback cb) { connectionCallback_ = std::move(cb); }
@@ -53,11 +53,11 @@ private:
     void removeConnection(const TcpConnectionPtr& conn);
     void removeConnectionInLoop(const TcpConnectionPtr& conn);
 
-    EventLoop* loop_;
+    EventLoop* baseLoop_;
     std::string name_;
     std::string ipPort_;
     std::unique_ptr<Acceptor> acceptorPtr_;
-    std::shared_ptr<EventLoopThreadPool> threadPool_;
+    std::shared_ptr<EventLoopThreadPool> threadPoolPtr_;
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     WriteCompleteCallback writeCompleteCallback_;

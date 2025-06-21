@@ -36,20 +36,28 @@ int main()
     spdlog::info("Any2 type: {}, value: {}", any3.type().name(), *any3.cast<float>());
     spdlog::info("Any4 type: {}, value: {}", any4.type().name(), any4.cast<test>()->a);
 
-    myMuduo::base::Thread thread(
-        []() {
-            for (int i = 0; i < 10; ++i)
-            {
-                spdlog::info("Thread is running in thread {}", myMuduo::base::CurrentThread::tid());
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            }
-        },
-        "TestThread");
-    spdlog::info("mainThread {}", myMuduo::base::CurrentThread::tid());
-    spdlog::info("Thread started with Name: {}", thread.name());
-    thread.start();
-    thread.join();
-    spdlog::info("Thread ID = {}  Name = {} has finished", thread.tid(), thread.name());
+    // myMuduo::base::Thread thread(
+    //     []() {
+    //         for (int i = 0; i < 10; ++i)
+    //         {
+    //             spdlog::info("Thread is running in thread {}", myMuduo::base::CurrentThread::tid());
+    //             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //         }
+    //     },
+    //     "TestThread");
+    // spdlog::info("mainThread {}", myMuduo::base::CurrentThread::tid());
+    // spdlog::info("Thread started with Name: {}", thread.name());
+    // thread.start();
+    // thread.join();
+    // spdlog::info("Thread ID = {}  Name = {} has finished", thread.tid(), thread.name());
+
+    std::vector<int> vec(10);
+    vec.data()[0] = 1;
+    vec.data()[1] = 2;
+    vec.data()[2] = 3;
+    spdlog::info("Vector first element: {}", vec[0]);
+    spdlog::info("Vector second element: {}", vec[1]);
+    spdlog::info("Vector third element: {}", vec[2]); 
 
     return 0;
 }
