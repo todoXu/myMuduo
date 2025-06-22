@@ -6,6 +6,7 @@
 #include "myMuduo/net/Channel.h"
 #include "myMuduo/net/Socket.h"
 #include "myMuduo/base/Timestamp.h"
+#include "myMuduo/net/Callback.h"
 
 namespace myMuduo {
 namespace net {
@@ -15,7 +16,6 @@ class InetAddress;
 class Acceptor : noncopyable
 {
 public:
-    using NewConnectionCallback = std::function<void(int sockfd, const InetAddress &peeraddr)>;
     Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reuseport);
     ~Acceptor();
 

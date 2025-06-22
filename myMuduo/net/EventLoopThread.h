@@ -3,6 +3,7 @@
 #include "condition_variable"
 #include "myMuduo/base/Thread.h"
 #include "myMuduo/base/noncopyable.h"
+#include "myMuduo/net/Callback.h"
 
 namespace myMuduo {
 namespace net {
@@ -12,8 +13,6 @@ class EventLoop;
 class EventLoopThread : noncopyable
 {
 public:
-    using ThreadInitCallback = std::function<void(EventLoop*)>;
-
     EventLoopThread(const ThreadInitCallback& cb = ThreadInitCallback(),
                     const std::string& name = std::string());
     ~EventLoopThread();

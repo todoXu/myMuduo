@@ -9,6 +9,7 @@
 #include "myMuduo/net/EventLoopThreadPool.h"
 #include "myMuduo/net/InetAddress.h"
 #include "myMuduo/net/TcpConnection.h"
+#include "myMuduo/net/Callback.h"
 
 namespace myMuduo {
 namespace net {
@@ -16,13 +17,6 @@ namespace net {
 class TcpServer : noncopyable
 {
 public:
-    using ThreadInitCallback = std::function<void(EventLoop*)>;
-    using TcpConnectionPtr = std::shared_ptr<TcpConnection>;
-    using ConnectionCallback = std::function<void(const TcpConnectionPtr&)>;
-    using MessageCallback = std::function<void(const TcpConnectionPtr&, Buffer*, Timestamp)>;
-    using WriteCompleteCallback = std::function<void(const TcpConnectionPtr&)>;
-    using ConnectionMap = std::unordered_map<std::string, TcpConnectionPtr>;
-
     enum Option
     {
         kNoReusePort = false,  // 不使用端口复用
@@ -64,6 +58,7 @@ private:
     ThreadInitCallback threadInitCallback_;
     std::atomic<bool> started_;
     int nextConnId_;
+    using ConnectionMap = std::unordered_map<std::string, TcpConnectionPtr>;
     ConnectionMap connections_;
 };
 

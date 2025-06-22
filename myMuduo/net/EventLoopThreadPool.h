@@ -4,6 +4,7 @@
 #include <vector>
 #include "myMuduo/base/noncopyable.h"
 #include "myMuduo/net/EventLoopThread.h"
+#include "myMuduo/net/Callback.h"
 
 namespace myMuduo {
 namespace net {
@@ -14,8 +15,6 @@ class EventLoopThread;
 class EventLoopThreadPool : noncopyable
 {
 public:
-    using ThreadInitCallback = std::function<void(EventLoop*)>;
-
     EventLoopThreadPool(EventLoop* baseLoop, const std::string& name = std::string());
     ~EventLoopThreadPool();
 

@@ -5,6 +5,7 @@
 #include <memory>
 #include "myMuduo/base/Timestamp.h"
 #include "myMuduo/base/noncopyable.h"
+#include "myMuduo/net/Callback.h"
 
 namespace myMuduo {
 namespace net {
@@ -13,9 +14,7 @@ class EventLoop;
 class Channel : noncopyable
 {
 public:
-    using EventCallback = std::function<void()>;
-    using ReadEventCallback = std::function<void(Timestamp)>;
-
+    
     Channel(EventLoop *loop, int fd);
     ~Channel();
 
