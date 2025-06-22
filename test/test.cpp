@@ -5,6 +5,7 @@
 #include "myMuduo/base/Thread.h"
 #include "myMuduo/net/InetAddress.h"
 #include "spdlog/spdlog.h"
+#include "endian.h"
 
 int main()
 {

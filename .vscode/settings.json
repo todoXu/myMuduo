@@ -82,7 +82,8 @@
         "netfwd": "cpp",
         "socket": "cpp",
         "timer": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "cassert": "cpp"
     },
     "highlightwords.colors": [
         {"dark": "yellow" },

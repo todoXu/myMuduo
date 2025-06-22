@@ -1,6 +1,7 @@
 #pragma once
-#include <cassert>
+
 #include <cstddef>
+#include <string>
 #include <vector>
 
 namespace myMuduo {
@@ -24,107 +25,60 @@ public:
     static const size_t kCheapPrepend = 8;    // 初始预留空间为8字节
     static const size_t kInitialSize = 1024;  // 初始大小为1024字节
 
-    explicit Buffer(int initialSize = kInitialSize)
-        : buffer_(kCheapPrepend + initialSize)
-        , headIndex_(kCheapPrepend)
-        , tailIndex_(kCheapPrepend) {};
+    explicit Buffer(int initialSize = kInitialSize);
 
-    ~Buffer() = default;
+    ~Buffer();
 
     Buffer(const Buffer&) = delete;  // 禁止拷贝构造
-    size_t readableBytesLength() const { return tailIndex_ - headIndex_; }
 
-    size_t writableBytesLength() const { return buffer_.size() - tailIndex_; }
+    size_t readableBytesLength() const;
+    size_t writableBytesLength() const;
 
-    size_t prependableBytesLength() const { return headIndex_; }
+    size_t prependableBytesLength() const;
 
-    //返回数据的起始位置
-    const char* peek() { return begin() + headIndex_; }
+    const char* peek();
 
-    //标记缓冲区头部的一部分数据为“已消耗”，使其不再可读
-    //这通常在数据被应用程序完整处理后调用。
-    void retrieve(size_t len)
-    {
-        assert(len <= readableBytesLength());
-        if (len < readableBytesLength())
-        {
-            headIndex_ += len;
-        }
-        else
-        {
-            //数据已经被读完了 重置缓冲区的数据索引位置
-            retrieveAll();
-        }
-    }
+    char* beginWrite();
 
-    void retrieveAll()
-    {
-        headIndex_ = kCheapPrepend;
-        tailIndex_ = kCheapPrepend;
-    }
+    void retrieve(size_t len);
 
-    std::string retrieveAllAsString() { return retrieveAsString(readableBytesLength()); }
+    void retrieveAll();
 
-    std::string retrieveAsString(size_t len)
-    {
-        assert(len <= readableBytesLength());
-        std::string result(peek(), len);
-        retrieve(len);
-        return result;
-    }
+    std::string retrieveAllAsString();
 
-    void ensureWritableBytes(size_t len)
-    {
-        if (writableBytesLength() < len)
-        {
-            //如果可写空间不足，扩展缓冲区
-            makeSpace(len);
-        }
-        assert(writableBytesLength() >= len);
-    }
+    std::string retrieveAsString(size_t len);
+
+    void ensureWritableBytes(size_t len);
+
+    void hasWritten(size_t len);
+
+    void append(const char* data, size_t len);
+
+    void prepend(const char* data, size_t len);
+
+    const char* findCRLF(const char* start);
+
+    const char* findCRLF();
+
+    ssize_t readFd(int fd, int* savedErrno);
+
+    void swap(Buffer& rhs);
 
 private:
-    char* begin() { return buffer_.data(); }
+    char* begin();
 
-    void makeSpace(size_t len)
-    {
-        //实际可用空间 = 可写空间 + 预留空间
-        size_t realLeftSize = writableBytesLength() + prependableBytesLength();
-
-        //尽可能内部整理 不要重新分配内存
-        if (realLeftSize >= kCheapPrepend + len)
-        {
-            size_t dataSize = readableBytesLength();
-            std::copy(begin() + headIndex_, begin() + tailIndex_, begin() + kCheapPrepend);
-            headIndex_ = kCheapPrepend;
-            tailIndex_ = headIndex_ + dataSize;
-            assert(dataSize == readableBytesLength());
-        }
-        //空间不够 要resize
-        else
-        {
-            /*
-            方案1 手动扩容 空间不浪费 但性能较差
-            size_t dataSize = readableBytesLength();
-            size_t newSize = dataSize + len + kCheapPrepend;
-            std::vector<char> newBuffer(newSize);
-            std::copy(begin() + headerIndex_, begin() + tailerIndex_, newBuffer.data() + kCheapPrepend);
-            buffer_.swap(newBuffer);
-            headerIndex_ = kCheapPrepend;
-            tailerIndex_ = kCheapPrepend + dataSize;
-            */
-
-            //方案2 直接扩容  有空间浪费（包含了之前的预留空间） 但性能更好
-            buffer_.resize(tailIndex_ + len);
-        }
-    }
+    void makeSpace(size_t len);
 
     std::vector<char> buffer_;
     size_t headIndex_;  //数据起始位置
     size_t tailIndex_;  //数据结束位置
+    static const char kCRLF[];
 };
+
 }  // namespace net
 }  // namespace myMuduo
+
+// Definition of static member
 
 /*
 演示如何构造并发送一个复杂头部的数据包
