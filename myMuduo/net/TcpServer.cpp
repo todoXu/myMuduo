@@ -36,8 +36,9 @@ TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr, const std::
         spdlog::critical("TcpServer::TcpServer - loop is nullptr");
         abort();
     }
+
     acceptorPtr_->setNewConnectionCallback(
-        std::bind(&TcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
+        [this](int sockfd, const InetAddress& peeraddr) { this->newConnection(sockfd, peeraddr); });
 }
 
 TcpServer::~TcpServer()

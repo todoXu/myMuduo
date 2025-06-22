@@ -46,7 +46,8 @@ EventLoop::EventLoop()
     spdlog::debug("EventLoop created in thread {}", threadId_);
     if (t_loopInThisThread)
     {
-        spdlog::critical("Another EventLoop {:p} exists in this thread {}", static_cast<void*>(t_loopInThisThread), threadId_);
+        spdlog::critical("Another EventLoop {:p} exists in this thread {}",
+                         static_cast<void *>(t_loopInThisThread), threadId_);
         abortNotInLoopThread();
     }
     else
@@ -55,7 +56,7 @@ EventLoop::EventLoop()
     }
 
     // 设置wakeupChannel的回调函数，当wakeupFd有可读事件时触发
-    wakeupChannelPtr_->setReadCallback(std::bind(&EventLoop::handleRead, this));
+    wakeupChannelPtr_->setReadCallback([this](Timestamp timestamp) { this->handleRead(); });
     wakeupChannelPtr_->enableReading();
 }
 
