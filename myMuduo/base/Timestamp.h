@@ -116,7 +116,7 @@ public:
     }
 
     // 运算符重载
-    Timestamp operator+(int64_t seconds) const
+    Timestamp operator+(double seconds) const
     {
         return Timestamp(microSecondsSinceEpoch_ + seconds * kMicroSecondsPerSecond);
     }
@@ -126,7 +126,7 @@ public:
         return Timestamp(microSecondsSinceEpoch_ + rhs.microSecondsSinceEpoch_);
     }
 
-    Timestamp operator-(int64_t seconds) const
+    Timestamp operator-(double seconds) const
     {
         return Timestamp(microSecondsSinceEpoch_ - seconds * kMicroSecondsPerSecond);
     }

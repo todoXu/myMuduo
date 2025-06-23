@@ -84,6 +84,7 @@ private:
     std::unique_ptr<Channel> channelPtr_;
     const InetAddress localAddr_;
     const InetAddress peerAddr_;
+    ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     WriteCompleteCallback writeCompleteCallback_;
     HighWaterMarkCallback highWaterMarkCallback_;

@@ -63,7 +63,7 @@ void TcpServer::start()
         //对于poller的修改必须在对应Loop_的线程中进行
         //实际上start()方法是在baseLoop_的线程中调用的
         //acceptorPtr_->listen();直接这样也可以
-        baseLoop_->runInLoop([this]() { acceptorPtr_->listen(); });
+        baseLoop_->runInLoop([this]() { this->acceptorPtr_->listen(); });
     }
 }
 

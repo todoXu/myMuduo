@@ -57,7 +57,7 @@ public:
 
 private:
     void abortNotInLoopThread();
-    void handleRead();
+    void handleRead(const Timestamp &timestamp);
     void doPendingFunctors();
 
     void printActiveChannels() const;

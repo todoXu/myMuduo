@@ -22,7 +22,7 @@ public:
     void bindAddress(const InetAddress &localaddr);
     void listen();
     int accept(InetAddress *peeraddr);
-
+    static int getSocketError(int sockfd);
     void shutdownWrite();
     void setTcpNoDelay(bool on);
     void setReuseAddr(bool on);

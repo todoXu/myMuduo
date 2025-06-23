@@ -56,7 +56,7 @@ EventLoop::EventLoop()
     }
 
     // 设置wakeupChannel的回调函数，当wakeupFd有可读事件时触发
-    wakeupChannelPtr_->setReadCallback([this](Timestamp timestamp) { this->handleRead(); });
+    wakeupChannelPtr_->setReadCallback([this](Timestamp timestamp) { this->handleRead(timestamp); });
     wakeupChannelPtr_->enableReading();
 }
 
@@ -208,13 +208,13 @@ void EventLoop::abortNotInLoopThread()
     abort();
 }
 
-void EventLoop::handleRead()
+void EventLoop::handleRead(const Timestamp& timestamp)
 {
     uint64_t one = 1;
     ssize_t n = read(wakeupFd_, &one, sizeof(one));
     if (n != sizeof(one))
     {
-        spdlog::error("EventLoop::handleRead() - read {} bytes instead of {}, fd={}", n, sizeof(one), wakeupFd_);
+        spdlog::error("EventLoop::handleRead() - read {} bytes instead of {}, fd={} time={}", n, sizeof(one), wakeupFd_, timestamp.toString());
     }
 }
 void EventLoop::doPendingFunctors()
