@@ -8,6 +8,8 @@ namespace myMuduo {
 class Timestamp
 {
 public:
+    static const int kMicroSecondsPerSecond = 1e6;
+    
     Timestamp()
         : microSecondsSinceEpoch_(0)
     {
@@ -77,13 +79,12 @@ public:
 
     static Timestamp invalid() { return Timestamp(); }
 
-    
     Timestamp &operator=(const Timestamp &rhs)
     {
         microSecondsSinceEpoch_ = rhs.microSecondsSinceEpoch_;
         return *this;
     }
-    
+
     // 操作符重载
     bool operator<(const Timestamp &rhs) const
     {
@@ -138,7 +139,6 @@ public:
 
 private:
     int64_t microSecondsSinceEpoch_;  // 微妙数 (1970-01-01 00:00:00 UTC)
-    static const int kMicroSecondsPerSecond = 1e6;
 };
 
 }  // namespace myMuduo

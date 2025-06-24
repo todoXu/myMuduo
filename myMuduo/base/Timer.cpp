@@ -11,7 +11,7 @@ Timer::Timer(TimerCallback cb, Timestamp when, double interval, bool repeat)
     , expiration_(when)
     , interval_(interval)
     , repeat_(repeat)
-    , sequence_(s_numCreated_.fetch_add(1))
+    , sequence_(++s_numCreated_)
 {
     if (repeat)
     {
