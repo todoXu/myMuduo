@@ -43,7 +43,14 @@ TcpServer::TcpServer(EventLoop* loop, const InetAddress& listenAddr, const std::
 
 TcpServer::~TcpServer()
 {
-    //待实现
+    baseLoop_->assertInLoopThread();
+
+    for (auto& item : connections_)
+    {
+        TcpConnectionPtr conn(item.second);
+        item.second.reset();
+        conn->getLoop()->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+    }
 }
 
 void TcpServer::setThreadNum(int numThreads)
