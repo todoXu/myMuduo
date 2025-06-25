@@ -49,7 +49,7 @@ TcpServer::~TcpServer()
     {
         TcpConnectionPtr conn(item.second);
         item.second.reset();
-        conn->getLoop()->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+        conn->getLoop()->runInLoop([conn]() { conn->connectDestroyed(); });
     }
 }
 
