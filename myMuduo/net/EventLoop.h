@@ -5,6 +5,9 @@
 #include <mutex>
 #include <vector>
 #include "myMuduo/base/Any.h"
+#include "myMuduo/base/Callback.h"
+#include "myMuduo/base/TimerId.h"
+#include "myMuduo/base/TimerQueue.h"
 #include "myMuduo/base/Timestamp.h"
 #include "myMuduo/base/noncopyable.h"
 
@@ -13,7 +16,6 @@ namespace net {
 
 class Channel;
 class IPoller;
-class TimerQueue;
 
 //1个TcpServer拥有1个baseLoop 同时会有1个EventLoopPool
 //baseLoop负责监听新连接的到来  并将新连接的connfd分配给tcpConnect
@@ -36,10 +38,10 @@ public:
     void queueInLoop(Functor cb);
     size_t queueSize();
 
-    //TimerId runAt(Timestamp time, TimerCallback cb);
-    //TimerId runAfter(double delay, TimerCallback cb);
-    //TimerId runEvery(double interval, TimerCallback cb);
-    //void cancel(TimerId timerId);
+    base::TimerId runAt(Timestamp time, base::TimerCallback cb);
+    base::TimerId runAfter(double delay, base::TimerCallback cb);
+    base::TimerId runEvery(double interval, base::TimerCallback cb);
+    void cancel(base::TimerId timerId);
 
     void wakeup();
     void updateChannel(Channel *channel);
@@ -64,24 +66,23 @@ private:
 
     using ChannelList = std::vector<Channel *>;
 
-    std::atomic<bool> looping_;            // 是否在事件循环中
-    std::atomic<bool> quit_;  // 是否退出事件循环
+    std::atomic<bool> looping_;  // 是否在事件循环中
+    std::atomic<bool> quit_;     // 是否退出事件循环
     std::atomic<bool> eventHandling_;
     std::atomic<bool> callingPendingFunctors_;
     const pid_t threadId_;      // 创建EventLoop的线程ID
     Timestamp pollReturnTime_;  // 上次poll的返回时间
 
     std::unique_ptr<IPoller> pollerPtr_;
+    std::unique_ptr<myMuduo::base::TimerQueue> timerQueuePtr_;
 
-    //std::unique_ptr<TimerQueue> timerQueue_;
-    
-    int wakeupFd_; //当baseloop接收到新连接时，通过wakeupfd唤醒ioLoop线程
+    int wakeupFd_;  //当baseloop接收到新连接时，通过wakeupfd唤醒ioLoop线程
     std::unique_ptr<Channel> wakeupChannelPtr_;
-    
+
     base::Any context_;
 
     ChannelList activeChannels_;
-    Channel *currentActiveChannel_; //currentActiveChannel_不拥有对象 只是临时指向正在处理的Channel
+    Channel *currentActiveChannel_;  //currentActiveChannel_不拥有对象 只是临时指向正在处理的Channel
 
     std::mutex functorMutex_;  // 保护 pendingFunctors_
     std::vector<Functor> pendingFunctors_;

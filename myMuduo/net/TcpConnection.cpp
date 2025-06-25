@@ -4,6 +4,8 @@
 #include "myMuduo/net/EventLoop.h"
 #include "myMuduo/net/Socket.h"
 #include "spdlog/spdlog.h"
+#include "myMuduo/base/WeakCallback.h"
+
 namespace myMuduo {
 namespace net {
 TcpConnection::TcpConnection(EventLoop* loop, const std::string& name, int sockfd,
@@ -126,14 +128,12 @@ void TcpConnection::forceClose()
 }
 void TcpConnection::forceCloseWithDelay(double seconds)
 {
-    /*if (state_ == kConnected || state_ == kConnecting)
+    if (state_ == kConnected || state_ == kDisconnecting)
     {
         setState(kDisconnecting);
-        // 使用shared_from_this()确保在当前对象的生命周期内，引用计数不会降为0
-        auto self = shared_from_this();
-        loop_->runAfter(seconds, [self]() { self->forceCloseInLoop(); });
-    }*/
-    seconds++;
+
+        loop_->runAfter(seconds, makeWeakCallback(shared_from_this(), &TcpConnection::forceClose));
+    }
 }
 void TcpConnection::setTcpNoDelay(bool on) { socketPtr_->setTcpNoDelay(on); }
 

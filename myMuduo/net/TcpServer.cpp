@@ -82,7 +82,27 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
         std::shared_ptr<TcpConnection>(new TcpConnection(ioLoop, connName, sockfd, localAddr, peerAddr));
 
     connections_[connName] = connPtr;
+    connPtr->setConnectionCallback(connectionCallback_);
+    connPtr->setMessageCallback(messageCallback_);
+    connPtr->setWriteCompleteCallback(writeCompleteCallback_);
+    connPtr->setCloseCallback([this](const TcpConnectionPtr& connPtr) { removeConnection(connPtr); });
 
-}  // namespace net
+    ioLoop->runInLoop([=]() { connPtr->connectEstablished(); });
+}
+
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+    baseLoop_->runInLoop([this, conn]() { this->removeConnectionInLoop(conn); });
+}
+
+void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
+{
+    baseLoop_->assertInLoopThread();
+    size_t n = connections_.erase(conn->getName());
+    assert(n == 1);
+    EventLoop* ioLoop = conn->getLoop();
+    ioLoop->queueInLoop([conn]() { conn->connectDestroyed(); });
+}
+
 }  // namespace net
 }  // namespace myMuduo

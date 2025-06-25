@@ -1,64 +1,71 @@
-#include <iostream>
-#include "chrono"
-#include "myMuduo/base/Any.h"
-#include "myMuduo/base/CurrentThread.h"
-#include "myMuduo/base/Thread.h"
-#include "myMuduo/net/InetAddress.h"
-#include "spdlog/spdlog.h"
-#include "endian.h"
+#include <functional>
+#include <string>
+#include "myMuduo/base/Timestamp.h"
+#include "myMuduo/net/Buffer.h"
+#include "myMuduo/net/EventLoop.h"
+#include "myMuduo/net/TcpServer.h"
 
-int main()
+class ChatServer
 {
-    myMuduo::net::InetAddress addr1(8080, true);  // 只接受本机的请求
-    spdlog::info("Address 1: {}", addr1.toIpPort());
-
-    myMuduo::net::InetAddress addr2("127.0.0.1", 8011);
-    spdlog::info("Address 2: {}", addr1.toIpPort());
-
-    myMuduo::net::InetAddress addr3;
-    myMuduo::net::InetAddress::resolve("localhost", &addr3);
-    spdlog::info("Address 3: {}", addr1.toIpPort());
-
-    myMuduo::net::InetAddress addr4;
-    myMuduo::net::InetAddress::resolve("www.baidu.com", &addr4);
-    spdlog::info("Address 4: {}", addr4.toIpPort());
-
-    myMuduo::base::Any any1(42);
-    myMuduo::base::Any any2(std::string("Hello, World!"));
-    myMuduo::base::Any any3((float)1.1);
-
-    struct test
+public:
+    ChatServer(myMuduo::net::EventLoop *loop, const myMuduo::net::InetAddress &listenAddr, const std::string &name)
+        : loop_(loop)
+        , server_(loop, listenAddr, name)
     {
-        int a;
-    };
-    myMuduo::base::Any any4(test{222});
-    spdlog::info("Any1 type: {}, value: {}", any1.type().name(), *any1.cast<int>());
-    spdlog::info("Any2 type: {}, value: {}", any2.type().name(), *any2.cast<std::string>());
-    spdlog::info("Any2 type: {}, value: {}", any3.type().name(), *any3.cast<float>());
-    spdlog::info("Any4 type: {}, value: {}", any4.type().name(), any4.cast<test>()->a);
+        // 设置连接回调函数
+        server_.setConnectionCallback(std::bind(&ChatServer::onConnection, this, std::placeholders::_1));
+        // 设置消息回调函数
+        server_.setMessageCallback(std::bind(&ChatServer::onMessage, this, std::placeholders::_1,
+                                             std::placeholders::_2, std::placeholders::_3));
+        // 设置线程池大小
+        server_.setThreadNum(4);
+    }
 
-    // myMuduo::base::Thread thread(
-    //     []() {
-    //         for (int i = 0; i < 10; ++i)
-    //         {
-    //             spdlog::info("Thread is running in thread {}", myMuduo::base::CurrentThread::tid());
-    //             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    //         }
-    //     },
-    //     "TestThread");
-    // spdlog::info("mainThread {}", myMuduo::base::CurrentThread::tid());
-    // spdlog::info("Thread started with Name: {}", thread.name());
-    // thread.start();
-    // thread.join();
-    // spdlog::info("Thread ID = {}  Name = {} has finished", thread.tid(), thread.name());
+    void start()
+    {
+        server_.start();
+        printf("ChatServer started at %s\n", server_.ipPort().c_str());
+    }
 
-    std::vector<int> vec(10);
-    vec.data()[0] = 1;
-    vec.data()[1] = 2;
-    vec.data()[2] = 3;
-    spdlog::info("Vector first element: {}", vec[0]);
-    spdlog::info("Vector second element: {}", vec[1]);
-    spdlog::info("Vector third element: {}", vec[2]); 
+private:
+    // 处理连接和断开
+    void onConnection(const myMuduo::net::TcpConnectionPtr &tcpConnectionPtr)
+    {
+        if (tcpConnectionPtr->connected())
+        {
+            printf("ChatServer - New connection from %s To %s\n",
+                   tcpConnectionPtr->getPeerAddress().toIpPort().c_str(),
+                   tcpConnectionPtr->getLocalAddress().toIpPort().c_str());
+        }
+        else
+        {
+            printf("ChatServer - Connection from %s closed\n",
+                   tcpConnectionPtr->getPeerAddress().toIpPort().c_str());
+            tcpConnectionPtr->shutdown();  // 关闭连接
+            loop_->quit();                 // 退出事件循环
+        }
+    }
+    // 处理接收到的消息
+    void onMessage(const myMuduo::net::TcpConnectionPtr &tcpConnectionPtr, myMuduo::net::Buffer *buffer,
+                   myMuduo::Timestamp timestamp)
+    {
+        std::string buf = buffer->retrieveAllAsString();
+        printf("ChatServer - Received message from %s: %s time = %s\n",
+               tcpConnectionPtr->getPeerAddress().toIpPort().c_str(), buf.c_str(), timestamp.toFormattedString().c_str());
+        tcpConnectionPtr->send(buf);  // Echo the message back to the client
+    }
+    myMuduo::net::EventLoop *loop_;
+    myMuduo::net::TcpServer server_;
+};
+
+int main(int, char **)
+{
+    myMuduo::net::EventLoop eventloop;
+    myMuduo::net::InetAddress listenAddr("127.0.0.1", 8888);
+    std::string serverName = "ChatServer";
+    ChatServer server(&eventloop, listenAddr, serverName);
+    server.start();
+    eventloop.loop();  // 相当于epoll_wait,阻塞等待事件发生 1个线程1个eventloop
 
     return 0;
 }

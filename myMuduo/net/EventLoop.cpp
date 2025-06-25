@@ -208,13 +208,14 @@ void EventLoop::abortNotInLoopThread()
     abort();
 }
 
-void EventLoop::handleRead(const Timestamp& timestamp)
+void EventLoop::handleRead(const Timestamp &timestamp)
 {
     uint64_t one = 1;
     ssize_t n = read(wakeupFd_, &one, sizeof(one));
     if (n != sizeof(one))
     {
-        spdlog::error("EventLoop::handleRead() - read {} bytes instead of {}, fd={} time={}", n, sizeof(one), wakeupFd_, timestamp.toString());
+        spdlog::error("EventLoop::handleRead() - read {} bytes instead of {}, fd={} time={}", n,
+                      sizeof(one), wakeupFd_, timestamp.toString());
     }
 }
 void EventLoop::doPendingFunctors()
@@ -242,6 +243,25 @@ void EventLoop::printActiveChannels() const
         spdlog::info("activeChannels_ = {}", channel->reventsToString());
     }
 }
+
+base::TimerId EventLoop::runAt(Timestamp time, base::TimerCallback cb)
+{
+    return timerQueuePtr_->addTimer(std::move(cb), time, 0.0, false);
+}
+
+base::TimerId EventLoop::runAfter(double delay, base::TimerCallback cb)
+{
+    Timestamp time = Timestamp::now() + delay;
+    return timerQueuePtr_->addTimer(std::move(cb), time, 0.0, false);
+}
+
+base::TimerId EventLoop::runEvery(double interval, base::TimerCallback cb)
+{
+    Timestamp time = Timestamp::now() + interval;
+    return timerQueuePtr_->addTimer(std::move(cb), time, interval, true);
+}
+
+void EventLoop::cancel(base::TimerId timerId) { timerQueuePtr_->cancel(timerId); }
 
 }  // namespace net
 }  // namespace myMuduo
