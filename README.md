@@ -1,1 +1,2 @@
-用Cpp11重写muduo 去除boost依赖
+用Cpp11重写muduo 去除boost依赖 尽可能用lambda替代bind
+简化了定时器设计 只用一个表维护内部定时器
